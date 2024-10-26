@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>옛한글 입력기</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="../apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="../android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <style>
+        @font-face {
+            font-family: 'HCRDotum';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.0/HCRDotum.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'HCRDotum', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 70%;
+            padding: 15px;
+            font-size: 18px;
+            font-family: 'HCRDotum', Arial, sans-serif;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            resize: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #inputText {
+            height: 100px;
+        }
+
+        #outputText {
+            height: 300px;
+        }
+
+        textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin: 10px auto;
+            display: block;
+            width: 150px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .description {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 16px;
+        }
+
+        .description p {
+            margin-bottom: 10px;
+        }
+
+        .description strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="../menu.html" style="width: 100%; height: 60px; border: none;"></iframe>
+
+    <h1>옛한글 입력기</h1>
+
+    <div class="container">
+        <textarea id="inputText" placeholder="영타로 입력해주세요!      예시 : gKsrmf"></textarea>
+        <textarea id="outputText" placeholder="결과" readonly></textarea>
+    </div>
+
+    <div class="description">
+        <p><strong>입력 방법 설명:</strong></p>
+        <p>위의 텍스트박스에 입력하면 밑에 결과가 나옵니다.<br>(대부분 보이는대로 입력하면 나옵니다)</p>
+        <p>기본자 입력 규칙은 아래와 같습니다.</p>
+        <ul>
+            <code>
+            ᅀ: shift + ㅋ(Z)<br>
+            ᅌ: shift + ㅌ(X) 혹은 shift + ㅇ 두번 (DD) [DD는 단일 전용]<br>
+            ᅙ: shift + ㅎ(G)<br>
+            ᆞ: shift + ㅑ(I)<br>
+            ᆢ: ᆢ<br>
+            <br>
+            ␥: shift + ㅣ(L) - 이 문자는 종성 채움 문자입니다.<br>
+            [예시 : 젭드 -> 제ᄠᅳ]<br>
+
+            <br>
+            =====<br>
+            <br>
+            ᄼ: ㅂ,<br>
+            ᄽ: ㅃ,<br>
+            ᄾ: ㅂ.<br>
+            ᄿ: ㅃ.<br>
+            ᅎ: ㅈ,<br>
+            ᅏ: ㅉ,<br>
+            ᅐ: ㅈ.<br>
+            ᅑ: ㅉ.<br>
+            ᅔ: ㅊ,<br>
+            ᅕ: ㅊ.<br>
+        </code>
+
+    <script>
+        const inputTextArea = document.getElementById('inputText');
+        const outputTextArea = document.getElementById('outputText');
+
+        // 변환 규칙 리스트 정의 (성, 입력, 변환)
+        const conversionRules1e = [
+            { s: "e", ent: "W", cov: "ퟹ" },
+            { s: "e", ent: "Q", cov: "ퟦ" },
+            { s: "e", ent: "A", cov: "ퟠ" },
+            { s: "e", ent: "E", cov: "ퟍ" },
+            { s: "e", ent: "S", cov: "ᇿ" },
+            { s: "s", ent: "G", cov: "ᅙ" },
+            { s: "e", ent: "G", cov: "ᇹ" },
+            { s: "e", ent: "Z", cov: "ᇫ" },
+            { s: "e", ent: "F", cov: "ᇐ" },
+            { s: "e", ent: "g", cov: "ᇂ" },
+            { s: "e", ent: "v", cov: "ᇁ" },
+            { s: "e", ent: "x", cov: "ᇀ" },
+            { s: "e", ent: "z", cov: "ᆿ" },
+            { s: "e", ent: "c", cov: "ᆾ" },
+            { s: "e", ent: "w", cov: "ᆽ" },
+            { s: "e", ent: "d", cov: "ᆼ" },
+            { s: "e", ent: "T", cov: "ᆻ" },
+            { s: "e", ent: "t", cov: "ᆺ" },
+            { s: "e", ent: "q", cov: "ᆸ" },
+            { s: "e", ent: "a", cov: "ᆷ" },
+            { s: "e", ent: "f", cov: "ᆯ" },
+            { s: "e", ent: "e", cov: "ᆮ" },
+            { s: "e", ent: "s", cov: "ᆫ" },
+            { s: "e", ent: "R", cov: "ᆩ" },
+            { s: "e", ent: "r", cov: "ᆨ" },
+            { s: "m", ent: "I", cov: "ᆢ" },
+            { s: "m", ent: "K", cov: "ᆞ" },
+            { s: "m", ent: "l", cov: "ᅵ" },
+            { s: "m", ent: "m", cov: "ᅳ" },
+            { s: "m", ent: "b", cov: "ᅲ" },
+            { s: "m", ent: "n", cov: "ᅮ" },
+            { s: "m", ent: "y", cov: "ᅭ" },
+            { s: "m", ent: "h", cov: "ᅩ" },
+            { s: "m", ent: "P", cov: "ᅨ" },
+            { s: "m", ent: "u", cov: "ᅧ" },
+            { s: "m", ent: "p", cov: "ᅦ" },
+            { s: "m", ent: "j", cov: "ᅥ" },
+            { s: "m", ent: "O", cov: "ᅤ" },
+            { s: "m", ent: "i", cov: "ᅣ" },
+            { s: "m", ent: "o", cov: "ᅢ" },
+            { s: "m", ent: "k", cov: "ᅡ" },
+            { s: "e", ent: "X", cov: "ᇰ" },
+            { s: "s", ent: "X", cov: "ᅌ" },
+            { s: "s", ent: "D", cov: "ᅇ" },
+            { s: "s", ent: "Z", cov: "ᅀ" },
+            { s: "s", ent: "F", cov: "ᄙ" },
+            { s: "s", ent: "S", cov: "ᄔ" },
+            { s: "s", ent: "g", cov: "ᄒ" },
+            { s: "s", ent: "v", cov: "ᄑ" },
+            { s: "s", ent: "x", cov: "ᄐ" },
+            { s: "s", ent: "z", cov: "ᄏ" },
+            { s: "s", ent: "c", cov: "ᄎ" },
+            { s: "s", ent: "W", cov: "ᄍ" },
+            { s: "s", ent: "w", cov: "ᄌ" },
+            { s: "s", ent: "d", cov: "ᄋ" },
+            { s: "s", ent: "T", cov: "ᄊ" },
+            { s: "s", ent: "t", cov: "ᄉ" },
+            { s: "s", ent: "Q", cov: "ᄈ" },
+            { s: "s", ent: "q", cov: "ᄇ" },
+            { s: "s", ent: "a", cov: "ᄆ" },
+            { s: "s", ent: "f", cov: "ᄅ" },
+            { s: "s", ent: "E", cov: "ᄄ" },
+            { s: "s", ent: "e", cov: "ᄃ" },
+            { s: "s", ent: "s", cov: "ᄂ" },
+            { s: "s", ent: "R", cov: "ᄁ" },
+            { s: "s", ent: "r", cov: "ᄀ" }
+        ];
+        const conversionRules2e = [
+            { s: "e", ent: "DD", cov: "ᇰ" },
+            { s: "s", ent: "DD", cov: "ᅌ" },
+            { s: "e", ent: "vx", cov: "ퟻ" },
+            { s: "e", ent: "vt", cov: "ퟺ" },
+            { s: "e", ent: "wQ", cov: "ퟸ" },
+            { s: "e", ent: "wq", cov: "ퟷ" },
+            { s: "e", ent: "Xg", cov: "ퟶ" },
+            { s: "e", ent: "Xa", cov: "ퟵ" },
+            { s: "e", ent: "Zq", cov: "ퟳ" },
+            { s: "e", ent: "tg", cov: "ퟲ" },
+            { s: "e", ent: "tx", cov: "ퟱ" },
+            { s: "e", ent: "tc", cov: "ퟰ" },
+            { s: "e", ent: "tw", cov: "ퟯ" },
+            { s: "e", ent: "tZ", cov: "ퟮ" },
+            { s: "e", ent: "Te", cov: "ퟭ" },
+            { s: "e", ent: "Tr", cov: "ퟬ" },
+            { s: "e", ent: "ta", cov: "ퟪ" },
+            { s: "e", ent: "qc", cov: "ퟩ" },
+            { s: "e", ent: "qw", cov: "ퟨ" },
+            { s: "e", ent: "qa", cov: "ퟥ" },
+            { s: "e", ent: "qe", cov: "ퟣ" },
+            { s: "e", ent: "aw", cov: "ퟢ" },
+            { s: "e", ent: "as", cov: "ퟞ" },
+            { s: "e", ent: "fd", cov: "ퟝ" },
+            { s: "e", ent: "fX", cov: "ퟛ" },
+            { s: "e", ent: "ex", cov: "ퟔ" },
+            { s: "e", ent: "ec", cov: "ퟓ" },
+            { s: "e", ent: "ew", cov: "ퟒ" },
+            { s: "e", ent: "et", cov: "ퟐ" },
+            { s: "e", ent: "eq", cov: "ퟏ" },
+            { s: "e", ent: "Eq", cov: "ퟎ" },
+            { s: "e", ent: "sc", cov: "ퟌ" },
+            { s: "e", ent: "sf", cov: "ퟋ" },
+            { s: "e", ent: "rg", cov: "ᇾ" },
+            { s: "e", ent: "rz", cov: "ᇽ" },
+            { s: "e", ent: "rc", cov: "ᇼ" },
+            { s: "e", ent: "rq", cov: "ᇻ" },
+            { s: "e", ent: "rs", cov: "ᇺ" },
+            { s: "e", ent: "gq", cov: "ᇸ" },
+            { s: "e", ent: "ga", cov: "ᇷ" },
+            { s: "e", ent: "gf", cov: "ᇶ" },
+            { s: "e", ent: "gs", cov: "ᇵ" },
+            { s: "e", ent: "vd", cov: "ᇴ" },
+            { s: "e", ent: "vq", cov: "ᇳ" },
+            { s: "e", ent: "XZ", cov: "ᇲ" },
+            { s: "e", ent: "Xt", cov: "ᇱ" },
+            { s: "e", ent: "Xz", cov: "ᇯ" },
+            { s: "e", ent: "XX", cov: "ᇮ" },
+            { s: "e", ent: "XR", cov: "ᇭ" },
+            { s: "e", ent: "Xr", cov: "ᇬ" },
+            { s: "e", ent: "tq", cov: "ᇪ" },
+            { s: "e", ent: "tf", cov: "ᇩ" },
+            { s: "e", ent: "te", cov: "ᇨ" },
+            { s: "e", ent: "tr", cov: "ᇧ" },
+            { s: "e", ent: "qd", cov: "ᇦ" },
+            { s: "e", ent: "qg", cov: "ᇥ" },
+            { s: "e", ent: "qv", cov: "ᇤ" },
+            { s: "e", ent: "qf", cov: "ᇣ" },
+            { s: "e", ent: "ad", cov: "ᇢ" },
+            { s: "e", ent: "ag", cov: "ᇡ" },
+            { s: "e", ent: "ac", cov: "ᇠ" },
+            { s: "e", ent: "aZ", cov: "ᇟ" },
+            { s: "e", ent: "aT", cov: "ᇞ" },
+            { s: "e", ent: "at", cov: "ᇝ" },
+            { s: "e", ent: "aq", cov: "ᇜ" },
+            { s: "e", ent: "af", cov: "ᇛ" },
+            { s: "e", ent: "ar", cov: "ᇚ" },
+            { s: "e", ent: "fG", cov: "ᇙ" },
+            { s: "e", ent: "fz", cov: "ᇘ" },
+            { s: "e", ent: "fZ", cov: "ᇗ" },
+            { s: "s", ent: "gg", cov: "ᅘ" },
+            { s: "e", ent: "fT", cov: "ᇖ" },
+            { s: "e", ent: "fe", cov: "ᇎ" },
+            { s: "e", ent: "fs", cov: "ᇍ" },
+            { s: "e", ent: "ef", cov: "ᇋ" },
+            { s: "e", ent: "er", cov: "ᇊ" },
+            { s: "e", ent: "sx", cov: "ᇉ" },
+            { s: "e", ent: "st", cov: "ᇇ" },
+            { s: "e", ent: "se", cov: "ᇆ" },
+            { s: "e", ent: "sr", cov: "ᇅ" },
+            { s: "e", ent: "rf", cov: "ᇃ" },
+            { s: "e", ent: "qt", cov: "ᆹ" },
+            { s: "e", ent: "fg", cov: "ᆶ" },
+            { s: "e", ent: "fv", cov: "ᆵ" },
+            { s: "e", ent: "fx", cov: "ᆴ" },
+            { s: "e", ent: "ft", cov: "ᆳ" },
+            { s: "e", ent: "fq", cov: "ᆲ" },
+            { s: "e", ent: "fa", cov: "ᆱ" },
+            { s: "e", ent: "fr", cov: "ᆰ" },
+            { s: "e", ent: "sg", cov: "ᆭ" },
+            { s: "e", ent: "sw", cov: "ᆬ" },
+            { s: "e", ent: "rt", cov: "ᆪ" },
+            { s: "m", ent: "Kp", cov: "ퟆ" },
+            { s: "m", ent: "Kk", cov: "ퟅ" },
+            { s: "m", ent: "ll", cov: "ퟄ" },
+            { s: "m", ent: "lb", cov: "ퟃ" },
+            { s: "m", ent: "ly", cov: "ퟂ" },
+            { s: "m", ent: "lP", cov: "ퟀ" },
+            { s: "m", ent: "lu", cov: "ힿ" },
+            { s: "m", ent: "lO", cov: "ힾ" },
+            { s: "m", ent: "mh", cov: "ힼ" },
+            { s: "m", ent: "mp", cov: "ힻ" },
+            { s: "m", ent: "mj", cov: "ힺ" },
+            { s: "m", ent: "mk", cov: "ힹ" },
+            { s: "m", ent: "bh", cov: "ힸ" },
+            { s: "m", ent: "bo", cov: "ힷ" },
+            { s: "m", ent: "nu", cov: "ힵ" },
+            { s: "m", ent: "yj", cov: "ힴ" },
+            { s: "m", ent: "yo", cov: "ힳ" },
+            { s: "m", ent: "yk", cov: "ힲ" },
+            { s: "m", ent: "hu", cov: "ힰ" },
+            { s: "m", ent: "hO", cov: "ᆧ" },
+            { s: "m", ent: "hi", cov: "ᆦ" },
+            { s: "m", ent: "ui", cov: "ᆥ" },
+            { s: "m", ent: "in", cov: "ᆤ" },
+            { s: "m", ent: "km", cov: "ᆣ" },
+            { s: "m", ent: "Kl", cov: "ᆡ" },
+            { s: "m", ent: "Kn", cov: "ᆠ" },
+            { s: "m", ent: "Kj", cov: "ᆟ" },
+            { s: "m", ent: "lK", cov: "ᆝ" },
+            { s: "m", ent: "lm", cov: "ᆜ" },
+            { s: "m", ent: "ln", cov: "ᆛ" },
+            { s: "m", ent: "lh", cov: "ᆚ" },
+            { s: "m", ent: "li", cov: "ᆙ" },
+            { s: "m", ent: "lk", cov: "ᆘ" },
+            { s: "m", ent: "mm", cov: "ᆖ" },
+            { s: "m", ent: "mn", cov: "ᆕ" },
+            { s: "m", ent: "bl", cov: "ᆔ" },
+            { s: "m", ent: "bn", cov: "ᆓ" },
+            { s: "m", ent: "bP", cov: "ᆒ" },
+            { s: "m", ent: "bu", cov: "ᆑ" },
+            { s: "m", ent: "bp", cov: "ᆐ" },
+            { s: "m", ent: "bj", cov: "ᆏ" },
+            { s: "m", ent: "bk", cov: "ᆎ" },
+            { s: "m", ent: "nn", cov: "ᆍ" },
+            { s: "m", ent: "nP", cov: "ᆌ" },
+            { s: "m", ent: "no", cov: "ᆊ" },
+            { s: "m", ent: "nk", cov: "ᆉ" },
+            { s: "m", ent: "yl", cov: "ᆈ" },
+            { s: "m", ent: "yh", cov: "ᆇ" },
+            { s: "m", ent: "yu", cov: "ᆆ" },
+            { s: "m", ent: "yO", cov: "ᆅ" },
+            { s: "m", ent: "yi", cov: "ᆄ" },
+            { s: "m", ent: "hn", cov: "ᆃ" },
+            { s: "m", ent: "hh", cov: "ᆂ" },
+            { s: "m", ent: "hP", cov: "ᆁ" },
+            { s: "m", ent: "hp", cov: "ᆀ" },
+            { s: "m", ent: "hj", cov: "ᅿ" },
+            { s: "m", ent: "un", cov: "ᅾ" },
+            { s: "m", ent: "uh", cov: "ᅽ" },
+            { s: "m", ent: "jm", cov: "ᅼ" },
+            { s: "m", ent: "jn", cov: "ᅻ" },
+            { s: "m", ent: "hj", cov: "ᅺ" },
+            { s: "m", ent: "yi", cov: "ᅹ" },
+            { s: "m", ent: "hi", cov: "ᅸ" },
+            { s: "m", ent: "nk", cov: "ᅷ" },
+            { s: "m", ent: "kh", cov: "ᅶ" },
+            { s: "m", ent: "ml", cov: "ᅴ" },
+            { s: "m", ent: "nl", cov: "ᅱ" },
+            { s: "m", ent: "np", cov: "ᅰ" },
+            { s: "m", ent: "nj", cov: "ᅯ" },
+            { s: "m", ent: "hl", cov: "ᅬ" },
+            { s: "m", ent: "ho", cov: "ᅫ" },
+            { s: "m", ent: "hk", cov: "ᅪ" },
+            { s: "s", ent: "gt", cov: "ꥻ" },
+            { s: "s", ent: "vg", cov: "ꥺ" },
+            { s: "s", ent: "xx", cov: "ꥹ" },
+            { s: "s", ent: "Wg", cov: "ꥸ" },
+            { s: "s", ent: "dg", cov: "ꥷ" },
+            { s: "s", ent: "df", cov: "ꥶ" },
+            { s: "s", ent: "Tq", cov: "ꥵ" },
+            { s: "s", ent: "qg", cov: "ꥴ" },
+            { s: "s", ent: "qz", cov: "ꥳ" },
+            { s: "s", ent: "at", cov: "ꥱ" },
+            { s: "s", ent: "ae", cov: "ꥰ" },
+            { s: "s", ent: "as", cov: "ꥯ" },
+            { s: "s", ent: "fz", cov: "ꥮ" },
+            { s: "s", ent: "fw", cov: "ꥭ" },
+            { s: "s", ent: "ft", cov: "ꥬ" },
+            { s: "s", ent: "fq", cov: "ꥩ" },
+            { s: "s", ent: "fa", cov: "ꥨ" },
+            { s: "s", ent: "fe", cov: "ꥦ" },
+            { s: "s", ent: "fr", cov: "ꥤ" },
+            { s: "s", ent: "ew", cov: "ꥣ" },
+            { s: "s", ent: "et", cov: "ꥢ" },
+            { s: "s", ent: "eq", cov: "ꥡ" },
+            { s: "s", ent: "ea", cov: "ꥠ" },
+            { s: "s", ent: "ef", cov: "ᅞ" },
+            { s: "s", ent: "sg", cov: "ᅝ" },
+            { s: "s", ent: "sw", cov: "ᅜ" },
+            { s: "s", ent: "st", cov: "ᅛ" },
+            { s: "s", ent: "re", cov: "ᅚ" },
+            { s: "s", ent: "vd", cov: "ᅗ" },
+            { s: "s", ent: "vq", cov: "ᅖ" },
+            { s: "s", ent: "c.", cov: "ᅕ" },
+            { s: "s", ent: "c,", cov: "ᅔ" },
+            { s: "s", ent: "cg", cov: "ᅓ" },
+            { s: "s", ent: "cz", cov: "ᅒ" },
+            { s: "s", ent: "W.", cov: "ᅑ" },
+            { s: "s", ent: "w.", cov: "ᅐ" },
+            { s: "s", ent: "W,", cov: "ᅏ" },
+            { s: "s", ent: "w,", cov: "ᅎ" },
+            { s: "s", ent: "wd", cov: "ᅍ" },
+            { s: "s", ent: "dv", cov: "ᅋ" },
+            { s: "s", ent: "dx", cov: "ᅊ" },
+            { s: "s", ent: "dc", cov: "ᅉ" },
+            { s: "s", ent: "dw", cov: "ᅈ" },
+            { s: "s", ent: "dZ", cov: "ᅆ" },
+            { s: "s", ent: "dt", cov: "ᅅ" },
+            { s: "s", ent: "dq", cov: "ᅄ" },
+            { s: "s", ent: "da", cov: "ᅃ" },
+            { s: "s", ent: "de", cov: "ᅂ" },
+            { s: "s", ent: "dr", cov: "ᅁ" },
+            { s: "s", ent: "Q.", cov: "ᄿ" },
+            { s: "s", ent: "q.", cov: "ᄾ" },
+            { s: "s", ent: "Q,", cov: "ᄽ" },
+            { s: "s", ent: "q,", cov: "ᄼ" },
+            { s: "s", ent: "tg", cov: "ᄻ" },
+            { s: "s", ent: "tv", cov: "ᄺ" },
+            { s: "s", ent: "tx", cov: "ᄹ" },
+            { s: "s", ent: "tz", cov: "ᄸ" },
+            { s: "s", ent: "tc", cov: "ᄷ" },
+            { s: "s", ent: "tw", cov: "ᄶ" },
+            { s: "s", ent: "td", cov: "ᄵ" },
+            { s: "s", ent: "Tt", cov: "ᄴ" },
+            { s: "s", ent: "tq", cov: "ᄲ" },
+            { s: "s", ent: "ta", cov: "ᄱ" },
+            { s: "s", ent: "tf", cov: "ᄰ" },
+            { s: "s", ent: "te", cov: "ᄯ" },
+            { s: "s", ent: "ts", cov: "ᄮ" },
+            { s: "s", ent: "tr", cov: "ᄭ" },
+            { s: "s", ent: "Qd", cov: "ᄬ" },
+            { s: "s", ent: "qd", cov: "ᄫ" },
+            { s: "s", ent: "qv", cov: "ᄪ" },
+            { s: "s", ent: "qx", cov: "ᄩ" },
+            { s: "s", ent: "qc", cov: "ᄨ" },
+            { s: "s", ent: "qw", cov: "ᄧ" },
+            { s: "s", ent: "qt", cov: "ᄡ" },
+            { s: "s", ent: "qe", cov: "ᄠ" },
+            { s: "s", ent: "qs", cov: "ᄟ" },
+            { s: "s", ent: "qr", cov: "ᄞ" },
+            { s: "s", ent: "ad", cov: "ᄝ" },
+            { s: "s", ent: "aq", cov: "ᄜ" },
+            { s: "s", ent: "fd", cov: "ᄛ" },
+            { s: "s", ent: "fg", cov: "ᄚ" },
+            { s: "s", ent: "fs", cov: "ᄘ" },
+            { s: "s", ent: "er", cov: "ᄗ" },
+            { s: "s", ent: "sq", cov: "ᄖ" },
+            { s: "s", ent: "se", cov: "ᄕ" },
+            { s: "s", ent: "sr", cov: "ᄓ" }
+        ];
+        const conversionRules3e = [
+            { s: "e", ent: "Zqd", cov: "ퟴ" },
+            { s: "e", ent: "tqd", cov: "ퟫ" },
+            { s: "e", ent: "qte", cov: "ퟧ" },
+            { s: "e", ent: "qfv", cov: "ퟤ" },
+            { s: "e", ent: "aqt", cov: "ퟡ" },
+            { s: "e", ent: "ass", cov: "ퟟ" },
+            { s: "e", ent: "fGg", cov: "ퟜ" },
+            { s: "e", ent: "fqv", cov: "ퟚ" },
+            { s: "e", ent: "fqe", cov: "ퟙ" },
+            { s: "e", ent: "fag", cov: "ퟘ" },
+            { s: "e", ent: "ffz", cov: "ퟗ" },
+            { s: "e", ent: "frg", cov: "ퟖ" },
+            { s: "e", ent: "frr", cov: "ퟕ" },
+            { s: "e", ent: "etr", cov: "ퟑ" },
+            { s: "e", ent: "fqd", cov: "ᇕ" },
+            { s: "e", ent: "fqg", cov: "ᇔ" },
+            { s: "e", ent: "fqt", cov: "ᇓ" },
+            { s: "e", ent: "fat", cov: "ᇒ" },
+            { s: "e", ent: "far", cov: "ᇑ" },
+            { s: "e", ent: "feg", cov: "ᇏ" },
+            { s: "e", ent: "frt", cov: "ᇌ" },
+            { s: "e", ent: "sZ ", cov: "ᇈ" },
+            { s: "e", ent: "rtr", cov: "ᇄ" },
+            { s: "m", ent: "lhn", cov: "ퟁ" },
+            { s: "m", ent: "lih", cov: "ힽ" },
+            { s: "m", ent: "nll", cov: "ힶ" },
+            { s: "m", ent: "hhl", cov: "ힱ" },
+            { s: "m", ent: "mln", cov: "ᆗ" },
+            { s: "m", ent: "njm", cov: "ᆋ" },
+            { s: "s", ent: "qtx", cov: "ꥲ" },
+            { s: "s", ent: "fqd", cov: "ꥫ" },
+            { s: "s", ent: "fqq", cov: "ꥪ" },
+            { s: "s", ent: "fee", cov: "ꥧ" },
+            { s: "s", ent: "frr", cov: "ꥥ" },
+            { s: "s", ent: "tqr", cov: "ᄳ" },
+            { s: "s", ent: "qtw", cov: "ᄦ" },
+            { s: "s", ent: "qtt", cov: "ᄥ" },
+            { s: "s", ent: "qtq", cov: "ᄤ" },
+            { s: "s", ent: "qte", cov: "ᄣ" },
+            { s: "s", ent: "qtr", cov: "ᄢ" }
+            // 추가적인 규칙 추가 가능
+        ];
+
+    // 중성 인식 함수: 1~3글자 길이의 중성 확인
+    const isVowel = (char) => {
+        return [conversionRules1e, conversionRules2e, conversionRules3e].some(rules => 
+            rules.some(rule => rule.s === 'm' && rule.cov === char)
+        );
+    };
+
+    inputTextArea.addEventListener('input', (e) => {
+        let resultText = '';
+        const inputText = inputTextArea.value; // 전체 입력 텍스트
+        let forceInitial = false;  // 초성 강제 플래그
+
+        // "L" 입력 시 "␥"로 대체
+        if (e.inputType === "insertText" && e.data === "L") {
+            inputTextArea.value = inputText.replace(/L/g, "␥");
+            return;
+        }
+
+        let i = 0;
+        while (i < inputText.length) {
+            let processed = false;
+
+            // "␥"를 만나면 다음 글자를 무조건 초성으로 처리
+            if (inputText[i] === '␥') {
+                resultText += '';  // "␥"를 공백으로 변환
+                forceInitial = true;  // 다음 글자는 무조건 초성으로 처리
+                i++;
+                continue;
+            }
+
+            // 1순위: (중성) + (ENT가 2글자인 초성/종성) + (중성) 확인
+            if (!forceInitial && i > 0 && i < inputText.length - 1) {
+                const prevChar = resultText.slice(-1); // 이전 문자 확인
+                const nextChar = inputText[i + 2]; // 다음 문자 확인
+                const substring = inputText.substring(i, i + 2);
+                
+                if (isVowel(prevChar) && isVowel(conversionRules1e.find(rule => rule.ent === nextChar)?.cov)) {
+                    const splitRule = conversionRules2e.find(rule => rule.ent === substring);
+
+                    if (splitRule) {
+                        // ENT를 반으로 나누어 처리: 앞은 종성, 뒤는 초성
+                        const firstRule = conversionRules1e.find(rule => rule.ent === substring[0] && rule.s === "e");
+                        const secondRule = conversionRules1e.find(rule => rule.ent === substring[1] && rule.s === "s");
+
+                        if (firstRule && secondRule) {
+                            resultText += firstRule.cov + secondRule.cov;
+                            i += 2; // 두 글자 처리 완료
+                            processed = true;
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            // 기존 2순위: 세 글자, 두 글자, 한 글자 순서대로 변환
+            const rulesByLength = [conversionRules3e, conversionRules2e, conversionRules1e];
+            for (const rules of rulesByLength) {
+                for (const rule of rules) {
+                    const substring = inputText.substring(i, i + rule.ent.length);
+                    if (rule.ent === substring) {
+                        let preceding = resultText.slice(-1); // 앞 글자 확인 (이전 문자)
+                        let following = inputText[i + rule.ent.length]; // 다음 문자 확인
+
+                        // 강제 초성 플래그가 설정된 경우, 무조건 초성으로 처리
+                        if (forceInitial && rule.s === "s") {
+                            resultText += rule.cov;
+                            processed = true;
+                            forceInitial = false;  // 플래그 초기화
+                            break;
+                        }
+
+                        // 1순위: 뒤에 중성이 있는 경우 -> 초성
+                        if (following && isVowel(conversionRules1e.find(r => r.ent === following)?.cov)) {
+                            if (rule.s === "s") {
+                                resultText += rule.cov;
+                                processed = true;
+                                break;
+                            }
+                        }
+                        // 2순위: 앞에 중성이 있는 경우 -> 종성
+                        else if (preceding && isVowel(preceding)) {
+                            if (rule.s === "e") {
+                                resultText += rule.cov;
+                                processed = true;
+                                break;
+                            }
+                        }
+                        // 3순위: 앞뒤에 중성이 없는 경우 -> 초성
+                        else if (rule.s === "s") {
+                            resultText += rule.cov;
+                            processed = true;
+                            break;
+                        }
+                        // 중성(m)의 경우 그대로 추가
+                        else if (rule.s === "m") {
+                            resultText += rule.cov;
+                            processed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (processed) {
+                    i += rules[0].ent.length; // 변환된 ENT의 길이만큼 증가
+                    break;
+                }
+            }
+
+            // 변환이 되지 않은 경우 그대로 추가
+            if (!processed) {
+                resultText += inputText[i];
+                i++;
+            }
+        }
+
+        // 결과 표시
+        outputTextArea.value = resultText;
+    });
+</script>
+
+</body>
+</html>
