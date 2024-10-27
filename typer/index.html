@@ -119,6 +119,10 @@
     <h1>옛한글 입력기</h1>
 
     <div class="container">
+        <label>
+            <input type="checkbox" id="convertToComplete" checked>
+            현대 한글 완성형으로 변환 출력
+        </label><br>
         <textarea id="inputText" placeholder="영타로 입력해주세요!      예시 : gKsrmf"></textarea>
         <textarea id="outputText" placeholder="결과" readonly></textarea>
     </div>
@@ -132,8 +136,8 @@
             ᅀ: shift + ㅋ(Z)<br>
             ᅌ: shift + ㅌ(X) 혹은 shift + ㅇ 두번 (DD) [DD는 단일 전용]<br>
             ᅙ: shift + ㅎ(G)<br>
-            ᆞ: shift + ㅑ(I)<br>
-            ᆢ: ᆢ<br>
+            ᆞ: shift + ㅏ(K)<br>
+            ᆢ: shift + ㅑ(I)<br>
             <br>
             ␥: shift + ㅣ(L) - 이 문자는 종성 채움 문자입니다.<br>
             [예시 : 젭드 -> 제ᄠᅳ]<br>
@@ -522,6 +526,42 @@
             // 추가적인 규칙 추가 가능
         ];
 
+
+    // 한글 초성, 중성, 종성 배열 정의
+    const CHO = ['ᄀ', 'ᄁ', 'ᄂ', 'ᄃ', 'ᄄ', 'ᄅ', 'ᄆ', 'ᄇ', 'ᄈ', 'ᄉ', 'ᄊ', 'ᄋ', 'ᄌ', 'ᄍ', 'ᄎ', 'ᄏ', 'ᄐ', 'ᄑ', 'ᄒ'];
+    const JUNG = ['ᅡ', 'ᅢ', 'ᅣ', 'ᅤ', 'ᅥ', 'ᅦ', 'ᅧ', 'ᅨ', 'ᅩ', 'ᅪ', 'ᅫ', 'ᅬ', 'ᅭ', 'ᅮ', 'ᅯ', 'ᅰ', 'ᅱ', 'ᅲ', 'ᅳ', 'ᅴ', 'ᅵ'];
+    const JONG = ['', 'ᆨ', 'ᆩ', 'ᆪ', 'ᆫ', 'ᆬ', 'ᆭ', 'ᆮ', 'ᆯ', 'ᆰ', 'ᆱ', 'ᆲ', 'ᆳ', 'ᆴ', 'ᆵ', 'ᆶ', 'ᆷ', 'ᆸ', 'ᆹ', 'ᆺ', 'ᆻ', 'ᆼ', 'ᆽ', 'ᆾ', 'ᆿ', 'ᇀ', 'ᇁ', 'ᇂ'];
+
+    // 텍스트 변환 규칙 리스트 정의 (생략 가능)
+
+    // 현대 한글 완성형 조합 함수
+    function assembleHangul(syllables) {
+        let result = "";
+        let i = 0;
+
+        while (i < syllables.length) {
+            const cho = CHO.includes(syllables[i]) ? syllables[i] : null;
+            const jung = (i + 1 < syllables.length && JUNG.includes(syllables[i + 1])) ? syllables[i + 1] : null;
+            const jong = (i + 2 < syllables.length && JONG.includes(syllables[i + 2])) ? syllables[i + 2] : null;
+
+            if (cho && jung) {
+                const choIndex = CHO.indexOf(cho);
+                const jungIndex = JUNG.indexOf(jung);
+                const jongIndex = jong ? JONG.indexOf(jong) : 0;
+
+                const syllableCode = 0xAC00 + (choIndex * 21 * 28) + (jungIndex * 28) + jongIndex;
+                result += String.fromCharCode(syllableCode);
+
+                i += jong ? 3 : 2;
+            } else {
+                result += syllables[i];
+                i += 1;
+            }
+        }
+
+        return result;
+    }
+
     // 중성 인식 함수: 1~3글자 길이의 중성 확인
     const isVowel = (char) => {
         return [conversionRules1e, conversionRules2e, conversionRules3e].some(rules => 
@@ -637,9 +677,21 @@
             }
         }
 
+        // 체크박스가 켜져 있으면 조합하여 완성형으로 출력
+        if (convertToComplete.checked) {
+            resultText = assembleHangul(resultText);
+        }
+
         // 결과 표시
         outputTextArea.value = resultText;
+
     });
+
+    // 체크박스 상태 변경 시에도 변환 작동
+    convertToComplete.addEventListener('change', () => {
+    inputTextArea.dispatchEvent(new Event('input'));
+    });
+
 </script>
 
 </body>

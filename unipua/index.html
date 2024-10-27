@@ -58,7 +58,7 @@
         height: 300px;
         padding: 15px;
         font-size: 18px;
-        font-family: 'HCRDotum', Arial, sans-serif; /* 폰트 추가 */
+        font-family: 'HCRDotum', Arial, sans-serif; 
         border: 1px solid #ddd;
         border-radius: 5px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -95,7 +95,7 @@
         margin-bottom: 20px;
         font-size: 18px;
         background-color: #2ecc71;
-        width: 400px;  /* 버튼의 너비를 동일하게 설정 */
+        width: 400px;  
         }
     
         .mode-button:hover {
@@ -116,6 +116,11 @@
 <h1>한양PUA ↔ 첫가끝 변환기</h1>
 <p>이 툴로 한양 PUA와 첫가끝 형식을 서로 변환할 수 있습니다!</p>
 <button class="mode-button" onclick="toggleMode()">모드 전환 <br>(현재: <span id="currentMode">한양PUA → 첫가끝</span>)</button>
+<!-- 체크박스 추가 -->
+<label style="display: none; text-align: center; margin-bottom: 20px;" id="assembleCheckboxLabel" text-align: center; margin-bottom: 20px;>
+    <input type="checkbox" id="assembleCheckbox" checked>
+    현대 한글 완성형으로 변환 출력
+</label>
 
 <div class="container">
     <textarea id="inputText" placeholder="여기에 입력하세요"></textarea>
@@ -10724,6 +10729,49 @@
     
 };
 
+function applyConversion() {
+    const inputText = document.getElementById('inputText').value;
+    let outputText;
+
+    if (currentMode) {
+        outputText = PUAtoUni(inputText);
+    } else {
+        outputText = UniToPUA(inputText);
+    }
+
+    document.getElementById('outputText').value = outputText;
+}
+
+function assembleHangul(syllables) {
+    const CHO = ['ᄀ', 'ᄁ', 'ᄂ', 'ᄃ', 'ᄄ', 'ᄅ', 'ᄆ', 'ᄇ', 'ᄈ', 'ᄉ', 'ᄊ', 'ᄋ', 'ᄌ', 'ᄍ', 'ᄎ', 'ᄏ', 'ᄐ', 'ᄑ', 'ᄒ'];
+    const JUNG = ['ᅡ', 'ᅢ', 'ᅣ', 'ᅤ', 'ᅥ', 'ᅦ', 'ᅧ', 'ᅨ', 'ᅩ', 'ᅪ', 'ᅫ', 'ᅬ', 'ᅭ', 'ᅮ', 'ᅯ', 'ᅰ', 'ᅱ', 'ᅲ', 'ᅳ', 'ᅴ', 'ᅵ'];
+    const JONG = ['', 'ᆨ', 'ᆩ', 'ᆪ', 'ᆫ', 'ᆬ', 'ᆭ', 'ᆮ', 'ᆯ', 'ᆰ', 'ᆱ', 'ᆲ', 'ᆳ', 'ᆴ', 'ᆵ', 'ᆶ', 'ᆷ', 'ᆸ', 'ᆹ', 'ᆺ', 'ᆻ', 'ᆼ', 'ᆽ', 'ᆾ', 'ᆿ', 'ᇀ', 'ᇁ', 'ᇂ'];
+
+    let result = "";
+    let i = 0;
+
+    while (i < syllables.length) {
+        const cho = CHO.includes(syllables[i]) ? syllables[i] : null;
+        const jung = (i + 1 < syllables.length && JUNG.includes(syllables[i + 1])) ? syllables[i + 1] : null;
+        const jong = (i + 2 < syllables.length && JONG.includes(syllables[i + 2])) ? syllables[i + 2] : null;
+
+        if (cho && jung) {
+            const choIndex = CHO.indexOf(cho);
+            const jungIndex = JUNG.indexOf(jung);
+            const jongIndex = jong ? JONG.indexOf(jong) : 0;
+
+            const syllableCode = 0xAC00 + (choIndex * 21 * 28) + (jungIndex * 28) + jongIndex;
+            result += String.fromCharCode(syllableCode);
+
+            i += jong ? 3 : 2;
+        } else {
+            result += syllables[i];
+            i += 1;
+        }
+    }
+
+    return result;
+}
     // 현재 모드: true는 한양PUA → 첫가끝, false는 첫가끝 → 한양PUA
     let currentMode = true;
 
@@ -10741,35 +10789,40 @@
         return new_line;
     }
 
-    // 첫가끝 -> PUA 변환 함수
-    function UniToPUA(input) {
-        let new_line = '';
-        for (let i = 0; i < input.length; i++) {
-            const currChar = input[i];
+// 첫가끝 -> PUA 변환 함수 수정
+function UniToPUA(input) {
+    let new_line = '';
+    const assembleMode = document.getElementById('assembleCheckbox').checked; // 체크박스 상태 확인
 
-            // 세 글자 조합형 처리 (예: ᄂᆞᆯ)
-            const nextThreeChars = input[i + 2] ? input[i] + input[i + 1] + input[i + 2] : '';
-            const nextTwoChars = input[i + 1] ? input[i] + input[i + 1] : '';
+    for (let i = 0; i < input.length; i++) {
+        const currChar = input[i];
 
-            // 세 글자 조합형이 있는 경우
-            if (dict_1_TOTAL[nextThreeChars]) {
-                new_line += String.fromCharCode(dict_1_TOTAL[nextThreeChars]);
-                i += 2;  // 세 글자 처리했으므로 인덱스 두 개 건너뛰기
-            }
-            // 두 글자 조합형이 있는 경우
-            else if (dict_1_TOTAL[nextTwoChars]) {
-                new_line += String.fromCharCode(dict_1_TOTAL[nextTwoChars]);
-                i++;  // 두 글자 처리했으므로 인덱스 하나 건너뛰기
-            }
-            // 단일 문자가 있는 경우
-            else if (dict_1_TOTAL[currChar]) {
-                new_line += String.fromCharCode(dict_1_TOTAL[currChar]);
-            } else {
-                new_line += currChar;  // 변환 리스트에 없는 경우 그대로 출력
-            }
+        // 세 글자 조합형 처리 (예: ᄂᆞᆯ)
+        const nextThreeChars = input[i + 2] ? input[i] + input[i + 1] + input[i + 2] : '';
+        const nextTwoChars = input[i + 1] ? input[i] + input[i + 1] : '';
+
+        // 세 글자 조합형이 있는 경우
+        if (dict_1_TOTAL[nextThreeChars]) {
+            new_line += String.fromCharCode(dict_1_TOTAL[nextThreeChars]);
+            i += 2;
         }
-        return new_line;
+        // 두 글자 조합형이 있는 경우
+        else if (dict_1_TOTAL[nextTwoChars]) {
+            new_line += String.fromCharCode(dict_1_TOTAL[nextTwoChars]);
+            i++;
+        }
+        // 단일 문자가 있는 경우
+        else if (dict_1_TOTAL[currChar]) {
+            new_line += String.fromCharCode(dict_1_TOTAL[currChar]);
+        } else {
+            new_line += currChar; // 변환 리스트에 없는 경우 그대로 출력
+        }
     }
+
+    // 체크박스가 활성화된 경우 한글 완성형으로 조립
+    return assembleMode ? assembleHangul(new_line) : new_line;
+}
+
 
     // 변환기 로직
     document.getElementById('inputText').addEventListener('input', function () {
@@ -10793,6 +10846,7 @@
     document.getElementById('currentMode').textContent = modeText;
     // document.getElementById('inputText').value = ''; // 입력 초기화 (삭제)
     document.getElementById('outputText').value = ''; // 출력 초기화
+    document.getElementById('assembleCheckboxLabel').style.display = currentMode ? 'none' : 'block';
     const inputText = document.getElementById('inputText').value;
         let outputText;
 
@@ -10814,6 +10868,10 @@
         document.execCommand("copy");
         alert("변환된 텍스트가 복사되었습니다.");
     }
+    document.getElementById('assembleCheckbox').addEventListener('change', applyConversion);
+
+    
+
 </script>
 
 </body>
