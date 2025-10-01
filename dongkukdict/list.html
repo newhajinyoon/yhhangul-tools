@@ -1,23 +1,90 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns:v="urn:schemas-microsoft-com:vml"
-xmlns:o="urn:schemas-microsoft-com:office:office"
-xmlns:x="urn:schemas-microsoft-com:office:excel"
-xmlns="http://www.w3.org/TR/REC-html40">
-
+﻿<!DOCTYPE html>
+<html lang="ko">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>동국정운 한자 전체</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<meta name="ProgId" content="Excel.Sheet"/>
-<meta name="Generator" content="Aspose.Cells 24.11"/>
-<link rel="File-List" href="_files_files/filelist.xml"/>
-<link rel="Edit-Time-Data" href="_files_files/editdata.mso"/>
-<link rel="OLE-Object-Data" href="_files_files/oledata.mso"/>
-<!--[if gte mso 9]><xml>
- <o:DocumentProperties>
-</o:DocumentProperties>
-</xml><![endif]-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동국정운 한자 전체 - 개선된 디자인</title>
+    <link rel="stylesheet" href="styles.css"> </head>
+<body>
 <style>
+    body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    padding: 20px;
+    background-color: #f8f8f8;
+}
+
+h1 {
+    color: #004d40; /* 다크 그린 계열 */
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.dongguk-table {
+    width: 100%;
+    border-collapse: collapse; /* 테두리 겹침 제거 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과로 입체감 부여 */
+    background-color: #ffffff;
+}
+
+/* 테이블 헤더 스타일 */
+.dongguk-table th {
+    background-color: #e0f2f1; /* 밝은 청록색 배경 */
+    color: #004d40; /* 다크 그린 텍스트 */
+    font-weight: bold;
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #c8e6c9;
+}
+
+/* 테이블 본문 셀 스타일 */
+.dongguk-table td {
+    padding: 10px 15px;
+    border: 1px solid #eeeeee;
+    vertical-align: middle;
+}
+
+/* '권/쪽' 열 스타일 */
+.dongguk-table td:nth-child(1) {
+    width: 80px;
+    text-align: center;
+    font-weight: 500;
+    background-color: #f7fcf9;
+}
+
+/* '음 (표기)' 열 스타일 */
+.dongguk-table td:nth-child(2) {
+    width: 150px;
+    text-align: center;
+    font-family: serif; /* 옛글자가 잘 보이도록 명조 계열 폰트 우선 */
+    font-size: 1.1em;
+    color: #d84315; /* 주황색으로 강조 */
+}
+
+/* '한자' 열 스타일 */
+.dongguk-table td:nth-child(3) {
+    text-align: left;
+    /* 한자가 잘 보이도록 글자 크기 조정 가능 */
+    /* font-size: 1.2em; */
+}
+
+/* 마우스 오버 시 행 배경색 변경 */
+.dongguk-table tbody tr:hover {
+    background-color: #f1f8e9; /* 부드러운 하이라이트 효과 */
+}
+
+/* 홀수 행 배경색을 연한 회색으로 지정하여 가독성 높임 (Zebra Striping) */
+.dongguk-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+.dongguk-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+</style>
+    <h1>동국정운 한자 전체</h1>
+
 <!--table
  {mso-displayed-decimal-separator:"\.";
  mso-displayed-thousand-separator:"\,";}
@@ -117,7 +184,7 @@ td
 </head>
 <body link='blue' vlink='purple' >
 
-<table border='0' cellpadding='0' cellspacing='0' width='1314' style='border-collapse:collapse;
+<table class="dongguk-table" border='0' cellpadding='0' cellspacing='0' width='1314' style='border-collapse:collapse;
 table-layout:fixed;width:985pt'>
  <col class='x-1' width='41' style='mso-width-source:userset;background:none;width:30.75pt'/>
  <col class='x-1' width='290' style='mso-width-source:userset;background:none;width:217.5pt'/>
@@ -13351,5 +13418,4 @@ table-layout:fixed;width:985pt'>
 </table>
 
 </body>
-
 </html>
